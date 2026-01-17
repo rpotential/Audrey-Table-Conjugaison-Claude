@@ -65,24 +65,18 @@
     elements.countValue = document.getElementById("count-value");
     elements.reviewList = document.getElementById("review-list");
 
-    // Cache DOM elements - Flashcards (Flip Card System)
-    elements.flipCard = document.getElementById("flip-card");
-    elements.flipCardInner = document.getElementById("flip-card-inner");
-    elements.flashcardPrompt = document.getElementById("flashcard-prompt");
-    elements.flashcardAnswer = document.getElementById("flashcard-answer");
-    elements.cardFrontLabel = document.getElementById("card-front-label");
-    elements.cardBackLabel = document.getElementById("card-back-label");
-    elements.flipBtn = document.getElementById("flip-btn");
-    elements.flashcardActions = document.getElementById("flashcard-actions");
-    elements.flashcardValidation = document.getElementById("flashcard-validation");
-    elements.markCorrect = document.getElementById("mark-correct");
-    elements.markIncorrect = document.getElementById("mark-incorrect");
-    elements.flashcardCorrect = document.getElementById("flashcard-correct");
-    elements.flashcardTotal = document.getElementById("flashcard-total");
-    elements.flashcardStreak = document.getElementById("flashcard-streak");
-    // French Guy Popup
-    elements.frenchGuyPopup = document.getElementById("french-guy-popup");
-    elements.frenchGuyText = document.getElementById("french-guy-text");
+    // Cache DOM elements - Flashcards (Simple)
+    elements.simpleCard = document.getElementById("simple-card");
+    elements.cardTense = document.getElementById("card-tense");
+    elements.cardMain = document.getElementById("card-main");
+    elements.cardAnswer = document.getElementById("card-answer");
+    elements.showAnswerBtn = document.getElementById("show-answer-btn");
+    elements.resultButtons = document.getElementById("result-buttons");
+    elements.wrongBtn = document.getElementById("wrong-btn");
+    elements.correctBtn = document.getElementById("correct-btn");
+    elements.fcCorrect = document.getElementById("fc-correct");
+    elements.fcTotal = document.getElementById("fc-total");
+    elements.fcStreak = document.getElementById("fc-streak");
 
     loadProgress();
     renderLearnSection();
@@ -465,21 +459,8 @@
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // Flashcard Functions (Flip Card System)
+  // Flashcard Functions (Simple)
   // ─────────────────────────────────────────────────────────────────────────
-
-  var FRENCH_GUY_PHRASES = [
-    "Très bien!",
-    "Magnifique!",
-    "Parfait!",
-    "Excellent!",
-    "Bravo!",
-    "Superbe!",
-    "Formidable!",
-    "Génial!",
-    "Incroyable!",
-    "Tu es top!"
-  ];
 
   function generateFlashcard() {
     // Pick random verb
@@ -501,7 +482,7 @@
   }
 
   function displayFlashcard() {
-    if (!elements.flashcardPrompt) return;
+    if (!elements.cardMain) return;
 
     var verb = state.flashcardCurrentVerb;
     var tenseKey = state.flashcardCurrentTense;
@@ -518,7 +499,6 @@
 
     // Build full phrases
     var frenchPhrase = frenchPronoun + " " + frenchConjugation;
-    // Clean up spacing for elided forms (j' aime -> j'aime)
     if (shouldElide) {
       frenchPhrase = pronoun.elided + frenchConjugation;
     }
@@ -527,114 +507,71 @@
 
     // Get tense name for display
     var tenseName = TENSES[tenseKey].name;
-    var tenseNameEn = TENSES[tenseKey].nameEn;
 
-    // Reset card to front
-    if (elements.flipCardInner) {
-      elements.flipCardInner.classList.remove("flipped");
-    }
-
-    // Set labels and content based on direction
+    // Set content based on direction
     if (state.flashcardDirection === "fr-to-en") {
-      elements.flashcardPrompt.textContent = frenchPhrase;
-      elements.flashcardAnswer.textContent = englishPhrase;
-      if (elements.cardFrontLabel) elements.cardFrontLabel.textContent = tenseName;
-      if (elements.cardBackLabel) elements.cardBackLabel.textContent = tenseNameEn;
+      elements.cardMain.textContent = frenchPhrase;
+      elements.cardAnswer.textContent = englishPhrase;
+      if (elements.cardTense) elements.cardTense.textContent = tenseName;
     } else {
-      elements.flashcardPrompt.textContent = englishPhrase;
-      elements.flashcardAnswer.textContent = frenchPhrase;
-      if (elements.cardFrontLabel) elements.cardFrontLabel.textContent = tenseNameEn;
-      if (elements.cardBackLabel) elements.cardBackLabel.textContent = tenseName;
+      elements.cardMain.textContent = englishPhrase;
+      elements.cardAnswer.textContent = frenchPhrase;
+      if (elements.cardTense) elements.cardTense.textContent = tenseName;
     }
 
-    // Show flip button, hide validation buttons
-    if (elements.flashcardActions) elements.flashcardActions.classList.remove("hidden");
-    if (elements.flashcardValidation) elements.flashcardValidation.classList.add("hidden");
-
-    // Reset card styling
-    if (elements.flipCard) {
-      elements.flipCard.classList.remove("correct-answer", "incorrect-answer");
+    // Reset UI state
+    elements.cardAnswer.classList.add("hidden");
+    if (elements.showAnswerBtn) elements.showAnswerBtn.classList.remove("hidden");
+    if (elements.resultButtons) elements.resultButtons.classList.add("hidden");
+    if (elements.simpleCard) {
+      elements.simpleCard.classList.remove("correct", "wrong");
     }
   }
 
-  function flipCard() {
+  function showAnswer() {
     if (state.flashcardRevealed) return;
-
     state.flashcardRevealed = true;
 
-    // Flip the card
-    if (elements.flipCardInner) {
-      elements.flipCardInner.classList.add("flipped");
-    }
-
-    // Hide flip button, show validation buttons
-    if (elements.flashcardActions) elements.flashcardActions.classList.add("hidden");
-    if (elements.flashcardValidation) elements.flashcardValidation.classList.remove("hidden");
+    elements.cardAnswer.classList.remove("hidden");
+    if (elements.showAnswerBtn) elements.showAnswerBtn.classList.add("hidden");
+    if (elements.resultButtons) elements.resultButtons.classList.remove("hidden");
   }
 
-  function markFlashcardCorrect() {
+  function markCorrect() {
     state.flashcardCorrect++;
     state.flashcardTotal++;
     state.flashcardStreak++;
-
-    // Add XP
     state.xp += 5;
     checkLevelUp();
 
-    // Visual feedback
-    if (elements.flipCard) elements.flipCard.classList.add("correct-answer");
+    if (elements.simpleCard) elements.simpleCard.classList.add("correct");
 
-    // Show French guy popup
-    showFrenchGuyPopup();
-
-    updateUI();
+    updateFlashcardStats();
     saveProgress();
 
-    // Auto-advance after animation
     setTimeout(function() {
-      nextFlashcard();
-    }, 1800);
+      generateFlashcard();
+    }, 600);
   }
 
-  function markFlashcardIncorrect() {
+  function markWrong() {
     state.flashcardTotal++;
     state.flashcardStreak = 0;
 
-    // Visual feedback
-    if (elements.flipCard) elements.flipCard.classList.add("incorrect-answer");
+    if (elements.simpleCard) elements.simpleCard.classList.add("wrong");
 
-    updateUI();
+    updateFlashcardStats();
     saveProgress();
 
-    // Auto-advance
     setTimeout(function() {
-      nextFlashcard();
-    }, 1200);
+      generateFlashcard();
+    }, 600);
   }
 
-  function nextFlashcard() {
-    if (elements.flipCard) {
-      elements.flipCard.classList.remove("correct-answer", "incorrect-answer");
-    }
-    generateFlashcard();
-  }
-
-  function showFrenchGuyPopup() {
-    if (!elements.frenchGuyPopup) return;
-
-    // Random phrase
-    var phrase = FRENCH_GUY_PHRASES[Math.floor(Math.random() * FRENCH_GUY_PHRASES.length)];
-    if (elements.frenchGuyText) elements.frenchGuyText.textContent = phrase;
-
-    // Show popup
-    elements.frenchGuyPopup.classList.remove("hidden");
-    elements.frenchGuyPopup.classList.add("show");
-
-    // Hide after animation
-    setTimeout(function() {
-      elements.frenchGuyPopup.classList.remove("show");
-      elements.frenchGuyPopup.classList.add("hidden");
-    }, 1600);
+  function updateFlashcardStats() {
+    if (elements.fcCorrect) elements.fcCorrect.textContent = state.flashcardCorrect;
+    if (elements.fcTotal) elements.fcTotal.textContent = state.flashcardTotal;
+    if (elements.fcStreak) elements.fcStreak.textContent = state.flashcardStreak;
   }
 
   function setupEventListeners() {
@@ -675,19 +612,19 @@
     });
 
     // Flashcard mode selector
-    document.querySelectorAll(".flashcard-mode").forEach(function(btn) {
+    document.querySelectorAll(".mode-toggle").forEach(function(btn) {
       btn.addEventListener("click", function() {
-        document.querySelectorAll(".flashcard-mode").forEach(function(b) { b.classList.remove("active"); });
+        document.querySelectorAll(".mode-toggle").forEach(function(b) { b.classList.remove("active"); });
         btn.classList.add("active");
         state.flashcardDirection = btn.dataset.direction;
         generateFlashcard();
       });
     });
 
-    // Flashcard buttons (Flip Card System)
-    if (elements.flipBtn) elements.flipBtn.addEventListener("click", flipCard);
-    if (elements.markCorrect) elements.markCorrect.addEventListener("click", markFlashcardCorrect);
-    if (elements.markIncorrect) elements.markIncorrect.addEventListener("click", markFlashcardIncorrect);
+    // Flashcard buttons (Simple)
+    if (elements.showAnswerBtn) elements.showAnswerBtn.addEventListener("click", showAnswer);
+    if (elements.correctBtn) elements.correctBtn.addEventListener("click", markCorrect);
+    if (elements.wrongBtn) elements.wrongBtn.addEventListener("click", markWrong);
 
     // Keyboard support for flashcards
     document.addEventListener("keydown", function(e) {
@@ -697,12 +634,12 @@
 
       if (e.code === "Space" && !state.flashcardRevealed) {
         e.preventDefault();
-        flipCard();
+        showAnswer();
       } else if (state.flashcardRevealed) {
         if (e.code === "ArrowRight" || e.code === "KeyG") {
-          markFlashcardCorrect();
+          markCorrect();
         } else if (e.code === "ArrowLeft" || e.code === "KeyM") {
-          markFlashcardIncorrect();
+          markWrong();
         }
       }
     });

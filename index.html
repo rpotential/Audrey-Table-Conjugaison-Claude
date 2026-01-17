@@ -291,136 +291,42 @@
           </div>
         </section>
 
-        <!-- Flashcards Section - Flip Card System -->
+        <!-- Flashcards Section - Simple -->
         <section id="flashcards" class="view">
-          <div class="flashcard-hero">
+          <div class="flashcard-header">
             <h2>Flashcards</h2>
-            <p>Think of the translation in your head, then flip to check!</p>
+            <div class="flashcard-mode-toggle">
+              <button class="mode-toggle active" data-direction="fr-to-en">FR → EN</button>
+              <button class="mode-toggle" data-direction="en-to-fr">EN → FR</button>
+            </div>
           </div>
 
-          <div class="flashcard-mode-selector">
-            <button class="flashcard-mode active" data-direction="fr-to-en">
-              <span class="flag">🇫🇷</span>
-              <span class="arrow">→</span>
-              <span class="flag">🇬🇧</span>
-              <span class="mode-text">French → English</span>
-            </button>
-            <button class="flashcard-mode" data-direction="en-to-fr">
-              <span class="flag">🇬🇧</span>
-              <span class="arrow">→</span>
-              <span class="flag">🇫🇷</span>
-              <span class="mode-text">English → French</span>
-            </button>
-          </div>
+          <div class="flashcard-area">
+            <!-- The Card -->
+            <div class="simple-card" id="simple-card">
+              <div class="card-tense" id="card-tense">Présent</div>
+              <div class="card-main" id="card-main">je parle</div>
+              <div class="card-answer hidden" id="card-answer">I speak</div>
+            </div>
 
-          <div class="flashcard-game-area">
-            <div class="flashcard-container">
-              <!-- Flip Card -->
-              <div class="flip-card" id="flip-card">
-                <div class="flip-card-inner" id="flip-card-inner">
-                  <div class="flip-card-front">
-                    <div class="card-label" id="card-front-label">French</div>
-                    <div class="card-word" id="flashcard-prompt">parler</div>
-                    <div class="card-instruction">Think of the answer, then flip!</div>
-                  </div>
-                  <div class="flip-card-back">
-                    <div class="card-label" id="card-back-label">English</div>
-                    <div class="card-word" id="flashcard-answer">to speak</div>
-                    <div class="card-instruction">Did you get it right?</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Action Buttons -->
-              <div class="flashcard-actions" id="flashcard-actions">
-                <button id="flip-btn" class="flashcard-btn flip-btn">
-                  <span class="btn-icon">↻</span>
-                  Flip Card
-                </button>
-              </div>
-
-              <!-- Validation Buttons (shown after flip) -->
-              <div class="flashcard-validation hidden" id="flashcard-validation">
-                <button id="mark-incorrect" class="validation-btn incorrect">
-                  <span class="btn-icon">✗</span>
-                  Missed it
-                </button>
-                <button id="mark-correct" class="validation-btn correct">
-                  <span class="btn-icon">✓</span>
-                  Got it!
-                </button>
+            <!-- Buttons -->
+            <div class="card-buttons">
+              <button id="show-answer-btn" class="card-btn primary">Show Answer</button>
+              <div id="result-buttons" class="result-buttons hidden">
+                <button id="wrong-btn" class="card-btn wrong">Missed it</button>
+                <button id="correct-btn" class="card-btn correct">Got it!</button>
               </div>
             </div>
 
-            <div class="flashcard-progress">
-              <div class="flashcard-stat">
-                <span class="flashcard-stat-value" id="flashcard-correct">0</span>
-                <span class="flashcard-stat-label">Correct</span>
-              </div>
-              <div class="flashcard-stat">
-                <span class="flashcard-stat-value" id="flashcard-total">0</span>
-                <span class="flashcard-stat-label">Total</span>
-              </div>
-              <div class="flashcard-stat">
-                <span class="flashcard-stat-value" id="flashcard-streak">0</span>
-                <span class="flashcard-stat-label">Streak</span>
-              </div>
+            <!-- Stats -->
+            <div class="card-stats">
+              <span><strong id="fc-correct">0</strong> correct</span>
+              <span><strong id="fc-total">0</strong> total</span>
+              <span><strong id="fc-streak">0</strong> streak</span>
             </div>
           </div>
         </section>
 
-        <!-- French Guy Popup -->
-        <div class="french-guy-popup hidden" id="french-guy-popup">
-          <div class="french-guy-container">
-            <svg class="french-guy-svg" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
-              <!-- Hair -->
-              <ellipse cx="100" cy="60" rx="55" ry="45" fill="#4a3728"/>
-              <path d="M50 70 Q45 40 70 30 Q100 20 130 30 Q155 40 150 70" fill="#5d4037"/>
-              <path d="M55 55 Q60 35 80 28" stroke="#6d4c41" stroke-width="3" fill="none"/>
-              <path d="M145 55 Q140 35 120 28" stroke="#6d4c41" stroke-width="3" fill="none"/>
-              <!-- Face -->
-              <ellipse cx="100" cy="90" rx="45" ry="50" fill="#e8beac"/>
-              <!-- Eyebrows -->
-              <path d="M70 70 Q80 65 90 70" stroke="#4a3728" stroke-width="2.5" fill="none"/>
-              <path d="M110 70 Q120 65 130 70" stroke="#4a3728" stroke-width="2.5" fill="none"/>
-              <!-- Eyes -->
-              <ellipse cx="80" cy="85" rx="8" ry="5" fill="white"/>
-              <ellipse cx="120" cy="85" rx="8" ry="5" fill="white"/>
-              <circle cx="80" cy="85" r="4" fill="#5d4037"/>
-              <circle cx="120" cy="85" r="4" fill="#5d4037"/>
-              <circle cx="81" cy="84" r="1.5" fill="white"/>
-              <circle cx="121" cy="84" r="1.5" fill="white"/>
-              <!-- Nose -->
-              <path d="M100 88 L97 102 Q100 105 103 102 L100 88" fill="#d4a593"/>
-              <!-- Smile -->
-              <path d="M85 115 Q100 128 115 115" stroke="#c17c74" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-              <!-- Slight stubble dots -->
-              <g fill="#8d6e63" opacity="0.3">
-                <circle cx="75" cy="120" r="0.8"/>
-                <circle cx="80" cy="125" r="0.8"/>
-                <circle cx="85" cy="128" r="0.8"/>
-                <circle cx="115" cy="128" r="0.8"/>
-                <circle cx="120" cy="125" r="0.8"/>
-                <circle cx="125" cy="120" r="0.8"/>
-              </g>
-              <!-- Neck -->
-              <rect x="85" y="135" width="30" height="25" fill="#e8beac"/>
-              <!-- Shirt (French striped) -->
-              <path d="M55 160 Q100 150 145 160 L155 280 L45 280 Z" fill="white"/>
-              <rect x="45" y="175" width="110" height="8" fill="#1e3a5f"/>
-              <rect x="45" y="195" width="110" height="8" fill="#1e3a5f"/>
-              <rect x="45" y="215" width="110" height="8" fill="#1e3a5f"/>
-              <rect x="45" y="235" width="110" height="8" fill="#1e3a5f"/>
-              <rect x="45" y="255" width="110" height="8" fill="#1e3a5f"/>
-              <!-- Collar -->
-              <path d="M85 155 L75 175 L85 165 Z" fill="white" stroke="#ddd" stroke-width="1"/>
-              <path d="M115 155 L125 175 L115 165 Z" fill="white" stroke="#ddd" stroke-width="1"/>
-            </svg>
-            <div class="french-guy-speech">
-              <span class="speech-text" id="french-guy-text">Très bien!</span>
-            </div>
-          </div>
-        </div>
       </main>
 
       <footer class="footer">
