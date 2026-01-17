@@ -7,7 +7,7 @@
       content="width=device-width, initial-scale=1"
     />
     <title>TableQuizz – Conjugaison</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=3" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;600;700&display=swap"
       rel="stylesheet"
@@ -291,38 +291,67 @@
           </div>
         </section>
 
-        <!-- Flashcards Section - Simple -->
+        <!-- Flashcards Section -->
         <section id="flashcards" class="view">
-          <div class="flashcard-header">
-            <h2>Flashcards</h2>
-            <div class="flashcard-mode-toggle">
-              <button class="mode-toggle active" data-direction="fr-to-en">FR → EN</button>
-              <button class="mode-toggle" data-direction="en-to-fr">EN → FR</button>
+          <div class="fc-container">
+            <!-- Mode Toggle -->
+            <div class="fc-mode-bar">
+              <button class="fc-mode active" data-direction="fr-to-en">
+                <span class="fc-mode-flag">FR</span>
+                <span class="fc-mode-arrow">→</span>
+                <span class="fc-mode-flag">EN</span>
+              </button>
+              <button class="fc-mode" data-direction="en-to-fr">
+                <span class="fc-mode-flag">EN</span>
+                <span class="fc-mode-arrow">→</span>
+                <span class="fc-mode-flag">FR</span>
+              </button>
             </div>
-          </div>
 
-          <div class="flashcard-area">
-            <!-- The Card -->
-            <div class="simple-card" id="simple-card">
-              <div class="card-tense" id="card-tense">Présent</div>
-              <div class="card-main" id="card-main">je parle</div>
-              <div class="card-answer hidden" id="card-answer">I speak</div>
-            </div>
-
-            <!-- Buttons -->
-            <div class="card-buttons">
-              <button id="show-answer-btn" class="card-btn primary">Show Answer</button>
-              <div id="result-buttons" class="result-buttons hidden">
-                <button id="wrong-btn" class="card-btn wrong">Missed it</button>
-                <button id="correct-btn" class="card-btn correct">Got it!</button>
+            <!-- The Beautiful Card -->
+            <div class="fc-card" id="fc-card">
+              <div class="fc-card-inner">
+                <div class="fc-tense-pill" id="fc-tense">Présent</div>
+                <div class="fc-prompt" id="fc-prompt">je parle</div>
+                <div class="fc-divider"></div>
+                <div class="fc-answer" id="fc-answer">I speak</div>
               </div>
             </div>
 
-            <!-- Stats -->
-            <div class="card-stats">
-              <span><strong id="fc-correct">0</strong> correct</span>
-              <span><strong id="fc-total">0</strong> total</span>
-              <span><strong id="fc-streak">0</strong> streak</span>
+            <!-- Action Button -->
+            <button id="fc-reveal-btn" class="fc-reveal-btn">
+              Show Answer
+              <span class="fc-key-hint">Space</span>
+            </button>
+
+            <!-- Result Buttons -->
+            <div id="fc-result-btns" class="fc-result-btns">
+              <button id="fc-wrong-btn" class="fc-result-btn fc-wrong">
+                <span class="fc-result-icon">✗</span>
+                Missed
+                <span class="fc-key-hint">←</span>
+              </button>
+              <button id="fc-correct-btn" class="fc-result-btn fc-correct">
+                <span class="fc-result-icon">✓</span>
+                Got it!
+                <span class="fc-key-hint">→</span>
+              </button>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="fc-progress">
+              <div class="fc-stat">
+                <span class="fc-stat-num" id="fc-num-correct">0</span>
+                <span class="fc-stat-label">Correct</span>
+              </div>
+              <div class="fc-stat fc-stat-streak">
+                <span class="fc-stat-num" id="fc-num-streak">0</span>
+                <span class="fc-stat-label">Streak</span>
+              </div>
+              <div class="fc-stat">
+                <span class="fc-stat-num" id="fc-num-total">0</span>
+                <span class="fc-stat-label">Total</span>
+              </div>
             </div>
           </div>
         </section>

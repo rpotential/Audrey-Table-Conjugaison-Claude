@@ -65,18 +65,18 @@
     elements.countValue = document.getElementById("count-value");
     elements.reviewList = document.getElementById("review-list");
 
-    // Cache DOM elements - Flashcards (Simple)
-    elements.simpleCard = document.getElementById("simple-card");
-    elements.cardTense = document.getElementById("card-tense");
-    elements.cardMain = document.getElementById("card-main");
-    elements.cardAnswer = document.getElementById("card-answer");
-    elements.showAnswerBtn = document.getElementById("show-answer-btn");
-    elements.resultButtons = document.getElementById("result-buttons");
-    elements.wrongBtn = document.getElementById("wrong-btn");
-    elements.correctBtn = document.getElementById("correct-btn");
-    elements.fcCorrect = document.getElementById("fc-correct");
-    elements.fcTotal = document.getElementById("fc-total");
-    elements.fcStreak = document.getElementById("fc-streak");
+    // Cache DOM elements - Flashcards
+    elements.fcCard = document.getElementById("fc-card");
+    elements.fcTense = document.getElementById("fc-tense");
+    elements.fcPrompt = document.getElementById("fc-prompt");
+    elements.fcAnswer = document.getElementById("fc-answer");
+    elements.fcRevealBtn = document.getElementById("fc-reveal-btn");
+    elements.fcResultBtns = document.getElementById("fc-result-btns");
+    elements.fcWrongBtn = document.getElementById("fc-wrong-btn");
+    elements.fcCorrectBtn = document.getElementById("fc-correct-btn");
+    elements.fcNumCorrect = document.getElementById("fc-num-correct");
+    elements.fcNumTotal = document.getElementById("fc-num-total");
+    elements.fcNumStreak = document.getElementById("fc-num-streak");
 
     loadProgress();
     renderLearnSection();
@@ -482,7 +482,7 @@
   }
 
   function displayFlashcard() {
-    if (!elements.cardMain) return;
+    if (!elements.fcPrompt) return;
 
     var verb = state.flashcardCurrentVerb;
     var tenseKey = state.flashcardCurrentTense;
@@ -510,21 +510,20 @@
 
     // Set content based on direction
     if (state.flashcardDirection === "fr-to-en") {
-      elements.cardMain.textContent = frenchPhrase;
-      elements.cardAnswer.textContent = englishPhrase;
-      if (elements.cardTense) elements.cardTense.textContent = tenseName;
+      elements.fcPrompt.textContent = frenchPhrase;
+      elements.fcAnswer.textContent = englishPhrase;
     } else {
-      elements.cardMain.textContent = englishPhrase;
-      elements.cardAnswer.textContent = frenchPhrase;
-      if (elements.cardTense) elements.cardTense.textContent = tenseName;
+      elements.fcPrompt.textContent = englishPhrase;
+      elements.fcAnswer.textContent = frenchPhrase;
     }
+    if (elements.fcTense) elements.fcTense.textContent = tenseName;
 
     // Reset UI state
-    elements.cardAnswer.classList.add("hidden");
-    if (elements.showAnswerBtn) elements.showAnswerBtn.classList.remove("hidden");
-    if (elements.resultButtons) elements.resultButtons.classList.add("hidden");
-    if (elements.simpleCard) {
-      elements.simpleCard.classList.remove("correct", "wrong");
+    if (elements.fcAnswer) elements.fcAnswer.classList.add("hidden");
+    if (elements.fcRevealBtn) elements.fcRevealBtn.classList.remove("hidden");
+    if (elements.fcResultBtns) elements.fcResultBtns.classList.add("hidden");
+    if (elements.fcCard) {
+      elements.fcCard.classList.remove("correct", "wrong", "revealed");
     }
   }
 
@@ -532,9 +531,10 @@
     if (state.flashcardRevealed) return;
     state.flashcardRevealed = true;
 
-    elements.cardAnswer.classList.remove("hidden");
-    if (elements.showAnswerBtn) elements.showAnswerBtn.classList.add("hidden");
-    if (elements.resultButtons) elements.resultButtons.classList.remove("hidden");
+    if (elements.fcAnswer) elements.fcAnswer.classList.remove("hidden");
+    if (elements.fcRevealBtn) elements.fcRevealBtn.classList.add("hidden");
+    if (elements.fcResultBtns) elements.fcResultBtns.classList.remove("hidden");
+    if (elements.fcCard) elements.fcCard.classList.add("revealed");
   }
 
   function markCorrect() {
@@ -544,34 +544,36 @@
     state.xp += 5;
     checkLevelUp();
 
-    if (elements.simpleCard) elements.simpleCard.classList.add("correct");
+    if (elements.fcCard) elements.fcCard.classList.add("correct");
 
     updateFlashcardStats();
+    updateUI();
     saveProgress();
 
     setTimeout(function() {
       generateFlashcard();
-    }, 600);
+    }, 500);
   }
 
   function markWrong() {
     state.flashcardTotal++;
     state.flashcardStreak = 0;
 
-    if (elements.simpleCard) elements.simpleCard.classList.add("wrong");
+    if (elements.fcCard) elements.fcCard.classList.add("wrong");
 
     updateFlashcardStats();
+    updateUI();
     saveProgress();
 
     setTimeout(function() {
       generateFlashcard();
-    }, 600);
+    }, 500);
   }
 
   function updateFlashcardStats() {
-    if (elements.fcCorrect) elements.fcCorrect.textContent = state.flashcardCorrect;
-    if (elements.fcTotal) elements.fcTotal.textContent = state.flashcardTotal;
-    if (elements.fcStreak) elements.fcStreak.textContent = state.flashcardStreak;
+    if (elements.fcNumCorrect) elements.fcNumCorrect.textContent = state.flashcardCorrect;
+    if (elements.fcNumTotal) elements.fcNumTotal.textContent = state.flashcardTotal;
+    if (elements.fcNumStreak) elements.fcNumStreak.textContent = state.flashcardStreak;
   }
 
   function setupEventListeners() {
@@ -612,19 +614,19 @@
     });
 
     // Flashcard mode selector
-    document.querySelectorAll(".mode-toggle").forEach(function(btn) {
+    document.querySelectorAll(".fc-mode").forEach(function(btn) {
       btn.addEventListener("click", function() {
-        document.querySelectorAll(".mode-toggle").forEach(function(b) { b.classList.remove("active"); });
+        document.querySelectorAll(".fc-mode").forEach(function(b) { b.classList.remove("active"); });
         btn.classList.add("active");
         state.flashcardDirection = btn.dataset.direction;
         generateFlashcard();
       });
     });
 
-    // Flashcard buttons (Simple)
-    if (elements.showAnswerBtn) elements.showAnswerBtn.addEventListener("click", showAnswer);
-    if (elements.correctBtn) elements.correctBtn.addEventListener("click", markCorrect);
-    if (elements.wrongBtn) elements.wrongBtn.addEventListener("click", markWrong);
+    // Flashcard buttons
+    if (elements.fcRevealBtn) elements.fcRevealBtn.addEventListener("click", showAnswer);
+    if (elements.fcCorrectBtn) elements.fcCorrectBtn.addEventListener("click", markCorrect);
+    if (elements.fcWrongBtn) elements.fcWrongBtn.addEventListener("click", markWrong);
 
     // Keyboard support for flashcards
     document.addEventListener("keydown", function(e) {
