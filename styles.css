@@ -1557,7 +1557,7 @@ button.ghost:hover,
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   Flashcard Section
+   Flashcard Section - Flip Card System
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .flashcard-hero {
@@ -1639,162 +1639,168 @@ button.ghost:hover,
   margin-bottom: var(--space-xl);
 }
 
-.flashcard {
-  background: linear-gradient(135deg, var(--pink-50) 0%, white 100%);
+/* Flip Card Styles */
+.flip-card {
+  perspective: 1000px;
+  margin-bottom: var(--space-xl);
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  min-height: 220px;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.flip-card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  min-height: 220px;
+  backface-visibility: hidden;
   border-radius: var(--radius-xl);
   padding: var(--space-2xl);
-  margin-bottom: var(--space-xl);
-  min-height: 180px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-normal);
-  border: 2px solid var(--pink-100);
+  text-align: center;
+  border: 3px solid var(--pink-200);
 }
 
-.flashcard.correct-answer {
-  border-color: #66bb6a;
-  background: linear-gradient(135deg, #e8f5e9 0%, white 100%);
+.flip-card-front {
+  background: linear-gradient(135deg, var(--pink-50) 0%, white 100%);
 }
 
-.flashcard.incorrect-answer {
-  border-color: #ef5350;
-  background: linear-gradient(135deg, #ffebee 0%, white 100%);
-}
-
-.flashcard.revealed {
+.flip-card-back {
+  background: linear-gradient(135deg, white 0%, var(--pink-50) 100%);
+  transform: rotateY(180deg);
   border-color: var(--pink-300);
 }
 
-.flashcard-content {
-  text-align: center;
+.flip-card.correct-answer .flip-card-back {
+  border-color: #66bb6a;
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
 }
 
-.flashcard-word {
-  display: block;
+.flip-card.incorrect-answer .flip-card-back {
+  border-color: #ef5350;
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+}
+
+.card-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--pink-400);
+  margin-bottom: var(--space-md);
+}
+
+.card-word {
   font-family: var(--font-display);
   font-size: 2.5rem;
   font-weight: 600;
   color: var(--warm-800);
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
 }
 
-.flashcard-hint {
+.card-instruction {
   font-size: 0.9rem;
   color: var(--warm-400);
+  font-style: italic;
 }
 
-/* Flashcard Input Area */
-.flashcard-input-area {
-  margin-bottom: var(--space-lg);
-}
-
-.flashcard-input {
-  width: 100%;
-  padding: var(--space-md) var(--space-lg);
-  font-family: var(--font-body);
-  font-size: 1.25rem;
-  text-align: center;
-  color: var(--warm-800);
-  background: white;
-  border: 2px solid var(--pink-200);
-  border-radius: var(--radius-lg);
-  outline: none;
-  margin-bottom: var(--space-md);
-  transition: all var(--transition-fast);
-}
-
-.flashcard-input:focus {
-  border-color: var(--pink-400);
-  box-shadow: 0 0 0 4px rgba(244, 143, 177, 0.2);
-}
-
-.flashcard-input::placeholder {
-  color: var(--warm-300);
-}
-
-.flashcard-buttons {
+/* Flashcard Action Buttons */
+.flashcard-actions,
+.flashcard-validation {
   display: flex;
   justify-content: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
+}
+
+.flashcard-actions.hidden,
+.flashcard-validation.hidden {
+  display: none;
 }
 
 .flashcard-btn {
   padding: var(--space-md) var(--space-xl);
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   cursor: pointer;
   transition: all var(--transition-fast);
-}
-
-.flashcard-btn.primary {
-  color: white;
-  background: linear-gradient(135deg, var(--pink-400) 0%, var(--pink-500) 100%);
-  border: none;
-}
-
-.flashcard-btn.primary:hover {
-  background: linear-gradient(135deg, var(--pink-500) 0%, var(--pink-600) 100%);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-pink);
-}
-
-.flashcard-btn.ghost {
-  color: var(--warm-500);
-  background: transparent;
-  border: 1px solid var(--warm-200);
-}
-
-.flashcard-btn.ghost:hover {
-  color: var(--pink-500);
-  border-color: var(--pink-300);
-}
-
-/* Flashcard Feedback */
-.flashcard-feedback {
-  padding: var(--space-md) var(--space-lg);
-  border-radius: var(--radius-lg);
-  font-weight: 500;
-  text-align: center;
-  min-height: 50px;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: var(--space-sm);
 }
 
-.flashcard-feedback:empty {
-  display: none;
+.flip-btn {
+  color: white;
+  background: linear-gradient(135deg, var(--pink-400) 0%, var(--pink-500) 100%);
+  border: none;
+  padding: var(--space-lg) var(--space-2xl);
+  font-size: 1.1rem;
 }
 
-.flashcard-feedback.correct {
+.flip-btn:hover {
+  background: linear-gradient(135deg, var(--pink-500) 0%, var(--pink-600) 100%);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-pink);
+}
+
+.flip-btn .btn-icon {
+  font-size: 1.3rem;
+}
+
+/* Validation Buttons */
+.validation-btn {
+  padding: var(--space-md) var(--space-xl);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  border: 2px solid;
+}
+
+.validation-btn.correct {
   background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-color: #66bb6a;
   color: #2e7d32;
 }
 
-.flashcard-feedback.incorrect {
+.validation-btn.correct:hover {
+  background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.3);
+}
+
+.validation-btn.incorrect {
   background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  border-color: #ef5350;
   color: #c62828;
 }
 
-.flashcard-feedback.revealed {
-  background: linear-gradient(135deg, var(--pink-50) 0%, var(--pink-100) 100%);
-  color: var(--warm-700);
+.validation-btn.incorrect:hover {
+  background: linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 83, 80, 0.3);
 }
 
-.flashcard-feedback .correct-icon {
+.validation-btn .btn-icon {
   font-size: 1.2rem;
-}
-
-.flashcard-feedback .incorrect-icon {
-  font-size: 1.2rem;
-}
-
-.flashcard-feedback .reveal-icon {
-  font-size: 1.2rem;
-  color: var(--pink-400);
 }
 
 /* Flashcard Progress */
@@ -1828,6 +1834,100 @@ button.ghost:hover,
   color: var(--warm-400);
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   French Guy Popup
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.french-guy-popup {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(50px) scale(0.8);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.french-guy-popup.hidden {
+  display: none;
+}
+
+.french-guy-popup.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.french-guy-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.french-guy-svg {
+  width: 140px;
+  height: auto;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.15));
+  animation: frenchGuyBounce 0.6s ease-out;
+}
+
+@keyframes frenchGuyBounce {
+  0% { transform: scale(0.3) translateY(100px); }
+  50% { transform: scale(1.1) translateY(-10px); }
+  70% { transform: scale(0.95) translateY(5px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+.french-guy-speech {
+  position: absolute;
+  top: -10px;
+  right: -80px;
+  background: white;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--pink-200);
+  animation: speechBubble 0.4s ease-out 0.2s both;
+}
+
+.french-guy-speech::before {
+  content: '';
+  position: absolute;
+  bottom: 20px;
+  left: -10px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 10px solid var(--pink-200);
+}
+
+.french-guy-speech::after {
+  content: '';
+  position: absolute;
+  bottom: 22px;
+  left: -6px;
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 8px solid white;
+}
+
+@keyframes speechBubble {
+  0% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.speech-text {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--pink-500);
+  white-space: nowrap;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .quiz-hero {
@@ -1851,11 +1951,44 @@ button.ghost:hover,
     justify-content: center;
   }
 
-  .flashcard-word {
+  .card-word {
     font-size: 2rem;
   }
 
   .quiz-pronoun .pronoun-main {
     font-size: 2.5rem;
+  }
+
+  .flip-card-inner {
+    min-height: 200px;
+  }
+
+  .flip-card-front,
+  .flip-card-back {
+    min-height: 200px;
+    padding: var(--space-lg);
+  }
+
+  .french-guy-popup {
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .french-guy-svg {
+    width: 100px;
+  }
+
+  .french-guy-speech {
+    right: -60px;
+    top: -5px;
+  }
+
+  .speech-text {
+    font-size: 0.9rem;
+  }
+
+  .validation-btn {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.9rem;
   }
 }

@@ -63,18 +63,24 @@
     elements.countValue = document.getElementById("count-value");
     elements.reviewList = document.getElementById("review-list");
 
-    // Cache DOM elements - Flashcards
-    elements.flashcard = document.getElementById("flashcard");
+    // Cache DOM elements - Flashcards (Flip Card System)
+    elements.flipCard = document.getElementById("flip-card");
+    elements.flipCardInner = document.getElementById("flip-card-inner");
     elements.flashcardPrompt = document.getElementById("flashcard-prompt");
-    elements.flashcardHint = document.getElementById("flashcard-hint");
-    elements.flashcardInput = document.getElementById("flashcard-input");
-    elements.flashcardCheck = document.getElementById("flashcard-check");
-    elements.flashcardReveal = document.getElementById("flashcard-reveal");
-    elements.flashcardNext = document.getElementById("flashcard-next");
-    elements.flashcardFeedback = document.getElementById("flashcard-feedback");
+    elements.flashcardAnswer = document.getElementById("flashcard-answer");
+    elements.cardFrontLabel = document.getElementById("card-front-label");
+    elements.cardBackLabel = document.getElementById("card-back-label");
+    elements.flipBtn = document.getElementById("flip-btn");
+    elements.flashcardActions = document.getElementById("flashcard-actions");
+    elements.flashcardValidation = document.getElementById("flashcard-validation");
+    elements.markCorrect = document.getElementById("mark-correct");
+    elements.markIncorrect = document.getElementById("mark-incorrect");
     elements.flashcardCorrect = document.getElementById("flashcard-correct");
     elements.flashcardTotal = document.getElementById("flashcard-total");
     elements.flashcardStreak = document.getElementById("flashcard-streak");
+    // French Guy Popup
+    elements.frenchGuyPopup = document.getElementById("french-guy-popup");
+    elements.frenchGuyText = document.getElementById("french-guy-text");
 
     loadProgress();
     renderLearnSection();
@@ -457,8 +463,21 @@
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // Flashcard Functions
+  // Flashcard Functions (Flip Card System)
   // ─────────────────────────────────────────────────────────────────────────
+
+  var FRENCH_GUY_PHRASES = [
+    "Très bien!",
+    "Magnifique!",
+    "Parfait!",
+    "Excellent!",
+    "Bravo!",
+    "Superbe!",
+    "Formidable!",
+    "Génial!",
+    "Incroyable!",
+    "Tu es top!"
+  ];
 
   function generateFlashcard() {
     var verbKeys = Object.keys(VERBS);
@@ -473,106 +492,113 @@
     if (!elements.flashcardPrompt) return;
 
     var verb = state.flashcardCurrentVerb;
+
+    // Reset card to front
+    if (elements.flipCardInner) {
+      elements.flipCardInner.classList.remove("flipped");
+    }
+
+    // Set labels and content based on direction
     if (state.flashcardDirection === "fr-to-en") {
       elements.flashcardPrompt.textContent = verb.infinitive;
-      elements.flashcardHint.textContent = "(French → English)";
+      elements.flashcardAnswer.textContent = verb.english;
+      if (elements.cardFrontLabel) elements.cardFrontLabel.textContent = "French";
+      if (elements.cardBackLabel) elements.cardBackLabel.textContent = "English";
     } else {
       elements.flashcardPrompt.textContent = verb.english;
-      elements.flashcardHint.textContent = "(English → French)";
+      elements.flashcardAnswer.textContent = verb.infinitive;
+      if (elements.cardFrontLabel) elements.cardFrontLabel.textContent = "English";
+      if (elements.cardBackLabel) elements.cardBackLabel.textContent = "French";
     }
 
-    if (elements.flashcardInput) {
-      elements.flashcardInput.value = "";
-      elements.flashcardInput.placeholder = state.flashcardDirection === "fr-to-en" ? "Type English..." : "Type French...";
-      elements.flashcardInput.focus();
-    }
+    // Show flip button, hide validation buttons
+    if (elements.flashcardActions) elements.flashcardActions.classList.remove("hidden");
+    if (elements.flashcardValidation) elements.flashcardValidation.classList.add("hidden");
 
-    if (elements.flashcardFeedback) {
-      elements.flashcardFeedback.innerHTML = "";
-      elements.flashcardFeedback.className = "flashcard-feedback";
-    }
-
-    if (elements.flashcard) {
-      elements.flashcard.classList.remove("revealed");
+    // Reset card styling
+    if (elements.flipCard) {
+      elements.flipCard.classList.remove("correct-answer", "incorrect-answer");
     }
   }
 
-  function checkFlashcardAnswer() {
-    if (!state.flashcardCurrentVerb || state.flashcardRevealed) return;
-
-    var userAnswer = elements.flashcardInput.value.trim().toLowerCase();
-    var verb = state.flashcardCurrentVerb;
-    var correctAnswer;
-
-    if (state.flashcardDirection === "fr-to-en") {
-      correctAnswer = verb.english.toLowerCase();
-    } else {
-      correctAnswer = verb.infinitive.toLowerCase();
-    }
-
-    // Normalize both for comparison
-    var normalizedUser = normalizeAnswer(userAnswer);
-    var normalizedCorrect = normalizeAnswer(correctAnswer);
-
-    // Also accept without "to " prefix for English
-    var correctWithoutTo = correctAnswer.replace(/^to /, "");
-    var normalizedWithoutTo = normalizeAnswer(correctWithoutTo);
-
-    state.flashcardTotal++;
-
-    if (normalizedUser === normalizedCorrect || normalizedUser === normalizedWithoutTo) {
-      // Correct
-      state.flashcardCorrect++;
-      state.flashcardStreak++;
-      state.flashcardRevealed = true;
-
-      elements.flashcardFeedback.innerHTML = '<span class="correct-icon">✓</span> Correct!';
-      elements.flashcardFeedback.className = "flashcard-feedback correct";
-
-      if (elements.flashcard) elements.flashcard.classList.add("correct-answer");
-
-      // Add XP for flashcards too
-      state.xp += 5;
-      checkLevelUp();
-    } else {
-      // Incorrect
-      state.flashcardStreak = 0;
-      state.flashcardRevealed = true;
-
-      var displayCorrect = state.flashcardDirection === "fr-to-en" ? verb.english : verb.infinitive;
-      elements.flashcardFeedback.innerHTML = '<span class="incorrect-icon">✗</span> ' + displayCorrect;
-      elements.flashcardFeedback.className = "flashcard-feedback incorrect";
-
-      if (elements.flashcard) elements.flashcard.classList.add("incorrect-answer");
-    }
-
-    updateUI();
-    saveProgress();
-  }
-
-  function revealFlashcard() {
+  function flipCard() {
     if (state.flashcardRevealed) return;
 
     state.flashcardRevealed = true;
+
+    // Flip the card
+    if (elements.flipCardInner) {
+      elements.flipCardInner.classList.add("flipped");
+    }
+
+    // Hide flip button, show validation buttons
+    if (elements.flashcardActions) elements.flashcardActions.classList.add("hidden");
+    if (elements.flashcardValidation) elements.flashcardValidation.classList.remove("hidden");
+  }
+
+  function markFlashcardCorrect() {
+    state.flashcardCorrect++;
+    state.flashcardTotal++;
+    state.flashcardStreak++;
+
+    // Add XP
+    state.xp += 5;
+    checkLevelUp();
+
+    // Visual feedback
+    if (elements.flipCard) elements.flipCard.classList.add("correct-answer");
+
+    // Show French guy popup
+    showFrenchGuyPopup();
+
+    updateUI();
+    saveProgress();
+
+    // Auto-advance after animation
+    setTimeout(function() {
+      nextFlashcard();
+    }, 1800);
+  }
+
+  function markFlashcardIncorrect() {
     state.flashcardTotal++;
     state.flashcardStreak = 0;
 
-    var verb = state.flashcardCurrentVerb;
-    var answer = state.flashcardDirection === "fr-to-en" ? verb.english : verb.infinitive;
-
-    elements.flashcardFeedback.innerHTML = '<span class="reveal-icon">→</span> ' + answer;
-    elements.flashcardFeedback.className = "flashcard-feedback revealed";
-
-    if (elements.flashcard) elements.flashcard.classList.add("revealed");
+    // Visual feedback
+    if (elements.flipCard) elements.flipCard.classList.add("incorrect-answer");
 
     updateUI();
+    saveProgress();
+
+    // Auto-advance
+    setTimeout(function() {
+      nextFlashcard();
+    }, 1200);
   }
 
   function nextFlashcard() {
-    if (elements.flashcard) {
-      elements.flashcard.classList.remove("revealed", "correct-answer", "incorrect-answer");
+    if (elements.flipCard) {
+      elements.flipCard.classList.remove("correct-answer", "incorrect-answer");
     }
     generateFlashcard();
+  }
+
+  function showFrenchGuyPopup() {
+    if (!elements.frenchGuyPopup) return;
+
+    // Random phrase
+    var phrase = FRENCH_GUY_PHRASES[Math.floor(Math.random() * FRENCH_GUY_PHRASES.length)];
+    if (elements.frenchGuyText) elements.frenchGuyText.textContent = phrase;
+
+    // Show popup
+    elements.frenchGuyPopup.classList.remove("hidden");
+    elements.frenchGuyPopup.classList.add("show");
+
+    // Hide after animation
+    setTimeout(function() {
+      elements.frenchGuyPopup.classList.remove("show");
+      elements.frenchGuyPopup.classList.add("hidden");
+    }, 1600);
   }
 
   function setupEventListeners() {
@@ -622,23 +648,28 @@
       });
     });
 
-    // Flashcard buttons
-    if (elements.flashcardCheck) elements.flashcardCheck.addEventListener("click", checkFlashcardAnswer);
-    if (elements.flashcardReveal) elements.flashcardReveal.addEventListener("click", revealFlashcard);
-    if (elements.flashcardNext) elements.flashcardNext.addEventListener("click", nextFlashcard);
+    // Flashcard buttons (Flip Card System)
+    if (elements.flipBtn) elements.flipBtn.addEventListener("click", flipCard);
+    if (elements.markCorrect) elements.markCorrect.addEventListener("click", markFlashcardCorrect);
+    if (elements.markIncorrect) elements.markIncorrect.addEventListener("click", markFlashcardIncorrect);
 
-    // Flashcard input enter key
-    if (elements.flashcardInput) {
-      elements.flashcardInput.addEventListener("keypress", function(e) {
-        if (e.key === "Enter") {
-          if (state.flashcardRevealed) {
-            nextFlashcard();
-          } else {
-            checkFlashcardAnswer();
-          }
+    // Keyboard support for flashcards
+    document.addEventListener("keydown", function(e) {
+      // Only when flashcards view is active
+      var flashcardsView = document.getElementById("flashcards");
+      if (!flashcardsView || !flashcardsView.classList.contains("active")) return;
+
+      if (e.code === "Space" && !state.flashcardRevealed) {
+        e.preventDefault();
+        flipCard();
+      } else if (state.flashcardRevealed) {
+        if (e.code === "ArrowRight" || e.code === "KeyG") {
+          markFlashcardCorrect();
+        } else if (e.code === "ArrowLeft" || e.code === "KeyM") {
+          markFlashcardIncorrect();
         }
-      });
-    }
+      }
+    });
   }
 
   function switchView(viewName) {
