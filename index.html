@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <title>TableQuizz – Conjugaison</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="app">
+      <header class="hero">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">
+            <svg viewBox="0 0 64 64" role="img">
+              <circle cx="32" cy="32" r="30" fill="#f7d8df"></circle>
+              <path
+                d="M20 34c2-6 8-10 12-10s10 4 12 10c2 6-2 12-12 12S18 40 20 34z"
+                fill="#f2a9c3"
+              ></path>
+              <circle cx="26" cy="30" r="2.5" fill="#3d2a35"></circle>
+              <circle cx="38" cy="30" r="2.5" fill="#3d2a35"></circle>
+              <path
+                d="M28 40c2 2 6 2 8 0"
+                stroke="#3d2a35"
+                stroke-width="2"
+                fill="none"
+                stroke-linecap="round"
+              ></path>
+              <path
+                d="M18 22c3-6 8-8 12-8"
+                stroke="#f2a9c3"
+                stroke-width="3"
+                stroke-linecap="round"
+              ></path>
+              <path
+                d="M46 22c-3-6-8-8-12-8"
+                stroke="#f2a9c3"
+                stroke-width="3"
+                stroke-linecap="round"
+              ></path>
+            </svg>
+          </div>
+          <div>
+            <p class="brand-kicker">TableQuizz</p>
+            <h1>Conjugaison chic</h1>
+            <p class="brand-subtitle">
+              Tables de conjugaison et quiz doux — French conjugation, made
+              lovely.
+            </p>
+          </div>
+        </div>
+        <div class="stats-panel">
+          <div class="stat">
+            <span class="stat-label">Niveau / Level</span>
+            <span id="level-value" class="stat-value">1</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">XP</span>
+            <span id="xp-value" class="stat-value">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Streak</span>
+            <span id="streak-value" class="stat-value">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Accuracy</span>
+            <span id="accuracy-value" class="stat-value">0%</span>
+          </div>
+        </div>
+      </header>
+
+      <nav class="tabs" aria-label="Main views">
+        <button class="tab active" data-view="tables">
+          Tables / Tables
+        </button>
+        <button class="tab" data-view="quiz">Quiz / Game</button>
+      </nav>
+
+      <main>
+        <section id="tables" class="view active">
+          <div class="card intro-card">
+            <h2>Tables de conjugaison</h2>
+            <p>
+              Les temps les plus utilisés, avec un verbe exemple, les pronoms
+              français et anglais. Use this as your chic reference.
+            </p>
+          </div>
+          <div id="tables-grid" class="tables-grid"></div>
+        </section>
+
+        <section id="quiz" class="view">
+          <div class="quiz-layout">
+            <div class="card quiz-card">
+              <div class="quiz-header">
+                <div>
+                  <h2>Quiz doux</h2>
+                  <p>
+                    Answer, earn paw points, and build muscle memory.
+                  </p>
+                </div>
+                <div class="mode-buttons" role="group">
+                  <button class="mode-btn active" data-mode="practice">
+                    Practice
+                  </button>
+                  <button class="mode-btn" data-mode="timed">
+                    60s Sprint
+                  </button>
+                </div>
+              </div>
+
+              <div class="question-card">
+                <div class="question-meta">
+                  <span id="tense-label"></span>
+                  <span id="verb-label"></span>
+                </div>
+
+                <div class="question-main">
+                  <div class="pronoun-box">
+                    <span id="pronoun-fr" class="pronoun-fr"></span>
+                    <span id="pronoun-en" class="pronoun-en"></span>
+                  </div>
+
+                  <div class="answer-area">
+                    <label for="answer-input">Conjuguer / Conjugate</label>
+                    <input
+                      id="answer-input"
+                      type="text"
+                      placeholder="Ex: ai parlé"
+                      autocomplete="off"
+                      spellcheck="false"
+                    />
+                    <div class="answer-actions">
+                      <button id="submit-answer" class="primary">
+                        Check
+                      </button>
+                      <button id="skip-question" class="ghost">
+                        Skip
+                      </button>
+                    </div>
+                    <div id="feedback" class="feedback"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <aside class="card side-card">
+              <h3>Progress</h3>
+              <div class="progress-row">
+                <span>Score</span>
+                <strong id="score-value">0</strong>
+              </div>
+              <div class="progress-row">
+                <span>Correct / Total</span>
+                <strong id="count-value">0 / 0</strong>
+              </div>
+              <div class="timer" id="timer">Ready</div>
+              <div class="review-title">À revoir / Review</div>
+              <div id="review-list" class="review-list"></div>
+              <div class="tip">
+                Tip: short, daily sessions beat cramming.
+              </div>
+            </aside>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        Made with pink minimalism, French chic, and a soft dog heart.
+      </footer>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
