@@ -23,6 +23,8 @@
     // Flashcard state
     flashcardDirection: "fr-to-en",
     flashcardCurrentVerb: null,
+    flashcardCurrentTense: null,
+    flashcardCurrentPronounIndex: 0,
     flashcardCorrect: 0,
     flashcardTotal: 0,
     flashcardStreak: 0,
@@ -480,9 +482,19 @@
   ];
 
   function generateFlashcard() {
+    // Pick random verb
     var verbKeys = Object.keys(VERBS);
     var randomKey = verbKeys[Math.floor(Math.random() * verbKeys.length)];
     state.flashcardCurrentVerb = VERBS[randomKey];
+
+    // Pick random tense
+    var tenseKeys = Object.keys(TENSES);
+    var randomTenseKey = tenseKeys[Math.floor(Math.random() * tenseKeys.length)];
+    state.flashcardCurrentTense = randomTenseKey;
+
+    // Pick random pronoun
+    state.flashcardCurrentPronounIndex = Math.floor(Math.random() * PRONOUNS.length);
+
     state.flashcardRevealed = false;
 
     displayFlashcard();
@@ -492,6 +504,30 @@
     if (!elements.flashcardPrompt) return;
 
     var verb = state.flashcardCurrentVerb;
+    var tenseKey = state.flashcardCurrentTense;
+    var pronounIndex = state.flashcardCurrentPronounIndex;
+    var pronoun = PRONOUNS[pronounIndex];
+
+    // Get conjugated forms
+    var frenchConjugation = verb.tenses[tenseKey][pronounIndex];
+    var englishConjugation = verb.tensesEn ? verb.tensesEn[tenseKey][pronounIndex] : "";
+
+    // Handle elision for French (je -> j' before vowel)
+    var shouldElide = pronoun.elided && verb.startsWithVowel;
+    var frenchPronoun = shouldElide ? pronoun.elided : pronoun.fr;
+
+    // Build full phrases
+    var frenchPhrase = frenchPronoun + " " + frenchConjugation;
+    // Clean up spacing for elided forms (j' aime -> j'aime)
+    if (shouldElide) {
+      frenchPhrase = pronoun.elided + frenchConjugation;
+    }
+
+    var englishPhrase = pronoun.en + " " + englishConjugation;
+
+    // Get tense name for display
+    var tenseName = TENSES[tenseKey].name;
+    var tenseNameEn = TENSES[tenseKey].nameEn;
 
     // Reset card to front
     if (elements.flipCardInner) {
@@ -500,15 +536,15 @@
 
     // Set labels and content based on direction
     if (state.flashcardDirection === "fr-to-en") {
-      elements.flashcardPrompt.textContent = verb.infinitive;
-      elements.flashcardAnswer.textContent = verb.english;
-      if (elements.cardFrontLabel) elements.cardFrontLabel.textContent = "French";
-      if (elements.cardBackLabel) elements.cardBackLabel.textContent = "English";
+      elements.flashcardPrompt.textContent = frenchPhrase;
+      elements.flashcardAnswer.textContent = englishPhrase;
+      if (elements.cardFrontLabel) elements.cardFrontLabel.textContent = tenseName;
+      if (elements.cardBackLabel) elements.cardBackLabel.textContent = tenseNameEn;
     } else {
-      elements.flashcardPrompt.textContent = verb.english;
-      elements.flashcardAnswer.textContent = verb.infinitive;
-      if (elements.cardFrontLabel) elements.cardFrontLabel.textContent = "English";
-      if (elements.cardBackLabel) elements.cardBackLabel.textContent = "French";
+      elements.flashcardPrompt.textContent = englishPhrase;
+      elements.flashcardAnswer.textContent = frenchPhrase;
+      if (elements.cardFrontLabel) elements.cardFrontLabel.textContent = tenseNameEn;
+      if (elements.cardBackLabel) elements.cardBackLabel.textContent = tenseName;
     }
 
     // Show flip button, hide validation buttons
