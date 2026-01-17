@@ -77,14 +77,100 @@
       </header>
 
       <nav class="tabs" aria-label="Main views">
-        <button class="tab active" data-view="tables">
+        <button class="tab active" data-view="learn">
+          Apprendre / Learn
+        </button>
+        <button class="tab" data-view="tables">
           Tables / Tables
         </button>
         <button class="tab" data-view="quiz">Quiz / Game</button>
       </nav>
 
       <main>
-        <section id="tables" class="view active">
+        <!-- Learn View - Verb Groups & Tense Guide -->
+        <section id="learn" class="view active">
+          <!-- Verb Groups Section -->
+          <div class="card intro-card">
+            <h2>Les Groupes de Verbes / Verb Groups</h2>
+            <p>French verbs are organized into three groups based on their infinitive endings and conjugation patterns.</p>
+          </div>
+
+          <div class="groups-container">
+            <!-- 1st Group -->
+            <div class="group-card group-1">
+              <div class="group-header">
+                <span class="group-number">1er</span>
+                <div class="group-title">
+                  <h3>Premier Groupe</h3>
+                  <p>First Group</p>
+                </div>
+              </div>
+              <div class="group-rule">
+                <strong>Règle:</strong> Verbes en <span class="highlight">-ER</span> (sauf aller)
+                <br><strong>Rule:</strong> Verbs ending in <span class="highlight">-ER</span> (except aller)
+              </div>
+              <div class="group-pattern">
+                <strong>Pattern:</strong> Most regular, ~90% of French verbs!
+              </div>
+              <div class="group-verbs" id="group1-verbs"></div>
+            </div>
+
+            <!-- 2nd Group -->
+            <div class="group-card group-2">
+              <div class="group-header">
+                <span class="group-number">2ème</span>
+                <div class="group-title">
+                  <h3>Deuxième Groupe</h3>
+                  <p>Second Group</p>
+                </div>
+              </div>
+              <div class="group-rule">
+                <strong>Règle:</strong> Verbes en <span class="highlight">-IR</span> avec <span class="highlight">-issons</span> à nous
+                <br><strong>Rule:</strong> Verbs ending in <span class="highlight">-IR</span> with <span class="highlight">-issons</span> for nous
+              </div>
+              <div class="group-pattern">
+                <strong>Test:</strong> nous fin<em>issons</em> ✓ → 2ème groupe
+              </div>
+              <div class="group-verbs" id="group2-verbs"></div>
+            </div>
+
+            <!-- 3rd Group -->
+            <div class="group-card group-3">
+              <div class="group-header">
+                <span class="group-number">3ème</span>
+                <div class="group-title">
+                  <h3>Troisième Groupe</h3>
+                  <p>Third Group</p>
+                </div>
+              </div>
+              <div class="group-rule">
+                <strong>Règle:</strong> Tous les autres verbes (irréguliers)
+                <br><strong>Rule:</strong> All other verbs (irregular)
+              </div>
+              <div class="group-pattern">
+                <strong>Includes:</strong> -IR (sans -issons), -RE, -OIR, être, avoir, aller
+              </div>
+              <div class="group-verbs" id="group3-verbs"></div>
+            </div>
+          </div>
+
+          <!-- Être & Avoir Special Section -->
+          <div class="card special-verbs-card">
+            <h2>Les Auxiliaires: Être & Avoir</h2>
+            <p>These two verbs are essential! They help form compound tenses (like passé composé).</p>
+            <div class="auxiliaries-grid" id="auxiliaries-grid"></div>
+          </div>
+
+          <!-- Tense Guide Section -->
+          <div class="card intro-card">
+            <h2>Quand utiliser chaque temps? / When to use each tense?</h2>
+            <p>Understanding when to use each tense is key to speaking naturally.</p>
+          </div>
+
+          <div class="tense-guide" id="tense-guide"></div>
+        </section>
+
+        <section id="tables" class="view">
           <div class="card intro-card">
             <h2>Tables de conjugaison</h2>
             <p>

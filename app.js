@@ -51,10 +51,137 @@
     elements.reviewList = document.getElementById("review-list");
 
     loadProgress();
+    renderLearnSection();
     renderTables();
     setupEventListeners();
     generateNewQuestion();
     updateUI();
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Learn Section - Verb Groups & Tense Guide
+  // ─────────────────────────────────────────────────────────────────────────
+
+  function renderLearnSection() {
+    renderVerbGroups();
+    renderAuxiliaries();
+    renderTenseGuide();
+  }
+
+  function renderVerbGroups() {
+    var group1Container = document.getElementById("group1-verbs");
+    var group2Container = document.getElementById("group2-verbs");
+    var group3Container = document.getElementById("group3-verbs");
+
+    if (!group1Container || !group2Container || !group3Container) return;
+
+    var group1Verbs = [];
+    var group2Verbs = [];
+    var group3Verbs = [];
+
+    Object.entries(VERBS).forEach(function(entry) {
+      var verb = entry[1];
+      if (verb.groupNum === 1) group1Verbs.push(verb);
+      else if (verb.groupNum === 2) group2Verbs.push(verb);
+      else if (verb.groupNum === 3 && !verb.isAuxiliary) group3Verbs.push(verb);
+    });
+
+    group1Container.innerHTML = group1Verbs.map(function(v) {
+      return '<div class="verb-chip"><span class="verb-fr">' + v.infinitive + '</span><span class="verb-en">' + v.english + '</span></div>';
+    }).join("");
+
+    group2Container.innerHTML = group2Verbs.map(function(v) {
+      return '<div class="verb-chip"><span class="verb-fr">' + v.infinitive + '</span><span class="verb-en">' + v.english + '</span></div>';
+    }).join("");
+
+    group3Container.innerHTML = group3Verbs.map(function(v) {
+      return '<div class="verb-chip"><span class="verb-fr">' + v.infinitive + '</span><span class="verb-en">' + v.english + '</span></div>';
+    }).join("");
+  }
+
+  function renderAuxiliaries() {
+    var container = document.getElementById("auxiliaries-grid");
+    if (!container) return;
+
+    var etre = VERBS.etre;
+    var avoir = VERBS.avoir;
+
+    container.innerHTML =
+      '<div class="auxiliary-card">' +
+        '<div class="auxiliary-header">' +
+          '<h3>ÊTRE <span class="aux-en">to be</span></h3>' +
+          '<p class="aux-note">Used for: movement verbs (aller, venir, partir...) &amp; reflexive verbs</p>' +
+        '</div>' +
+        createBilingualTable(etre, "present") +
+      '</div>' +
+      '<div class="auxiliary-card">' +
+        '<div class="auxiliary-header">' +
+          '<h3>AVOIR <span class="aux-en">to have</span></h3>' +
+          '<p class="aux-note">Used for: most other verbs in passé composé</p>' +
+        '</div>' +
+        createBilingualTable(avoir, "present") +
+      '</div>';
+  }
+
+  function createBilingualTable(verb, tenseKey) {
+    var conjugationsFr = verb.tenses[tenseKey];
+    var conjugationsEn = verb.tensesEn ? verb.tensesEn[tenseKey] : null;
+
+    var rows = PRONOUNS.map(function(pronoun, i) {
+      var shouldElide = pronoun.elided && verb.startsWithVowel;
+      var displayPronoun = shouldElide ? pronoun.elided : pronoun.fr;
+      var enConj = conjugationsEn ? conjugationsEn[i] : "";
+
+      return '<tr>' +
+        '<td class="pronoun-cell"><span class="pronoun-fr">' + displayPronoun + '</span><span class="pronoun-en">' + pronoun.en + '</span></td>' +
+        '<td class="conj-fr">' + conjugationsFr[i] + '</td>' +
+        '<td class="conj-en">' + enConj + '</td>' +
+      '</tr>';
+    }).join("");
+
+    return '<table class="bilingual-table"><thead><tr><th>Pronom</th><th>Français</th><th>English</th></tr></thead><tbody>' + rows + '</tbody></table>';
+  }
+
+  function renderTenseGuide() {
+    var container = document.getElementById("tense-guide");
+    if (!container) return;
+
+    var html = Object.entries(TENSES).map(function(entry) {
+      var key = entry[0];
+      var tense = entry[1];
+
+      var whenToUseHtml = "";
+      if (tense.whenToUse) {
+        whenToUseHtml = '<div class="when-to-use"><h4>Quand l\'utiliser / When to use:</h4><ul>' +
+          tense.whenToUse.map(function(item) {
+            return '<li><span class="use-fr">' + item.fr + '</span> <span class="use-en">(' + item.en + ')</span></li>';
+          }).join("") +
+        '</ul></div>';
+      }
+
+      var examplesHtml = "";
+      if (tense.examples) {
+        examplesHtml = '<div class="examples"><h4>Exemples / Examples:</h4><div class="examples-grid">' +
+          tense.examples.map(function(ex) {
+            return '<div class="example-pair"><div class="example-fr">' + ex.fr + '</div><div class="example-en">' + ex.en + '</div></div>';
+          }).join("") +
+        '</div></div>';
+      }
+
+      return '<div class="tense-card tense-guide-card" data-tense="' + key + '">' +
+        '<div class="tense-header tense-' + key + '">' +
+          '<h3>' + tense.name + ' <span class="tense-en">(' + tense.nameEn + ')</span></h3>' +
+          '<p class="tense-desc">' + tense.descriptionFr + '</p>' +
+          '<p class="tense-desc-en">' + tense.description + '</p>' +
+        '</div>' +
+        '<div class="tense-body">' +
+          whenToUseHtml +
+          examplesHtml +
+        '</div>' +
+      '</div>';
+    }).join("");
+
+    container.innerHTML = html;
   }
 
   function renderTables() {
@@ -80,25 +207,33 @@
     card.dataset.tense = tenseKey;
     card.dataset.verb = verbKey;
 
-    var conjugations = verb.tenses[tenseKey];
+    var conjugationsFr = verb.tenses[tenseKey];
+    var conjugationsEn = verb.tensesEn ? verb.tensesEn[tenseKey] : null;
 
     var tableRows = PRONOUNS.map(function(pronoun, i) {
       var shouldElide = pronoun.elided && verb.startsWithVowel;
       var displayPronoun = shouldElide ? pronoun.elided : pronoun.fr;
-      return '<tr><td class="pronoun-cell"><span class="pronoun-fr">' + displayPronoun + 
-             '</span><span class="pronoun-en">' + pronoun.en + 
-             '</span></td><td class="conjugation-cell">' + conjugations[i] + '</td></tr>';
+      var enConj = conjugationsEn ? conjugationsEn[i] : "";
+
+      return '<tr>' +
+        '<td class="pronoun-cell"><span class="pronoun-fr">' + displayPronoun + '</span><span class="pronoun-en">' + pronoun.en + '</span></td>' +
+        '<td class="conjugation-cell conj-fr">' + conjugationsFr[i] + '</td>' +
+        '<td class="conjugation-cell conj-en">' + enConj + '</td>' +
+      '</tr>';
     }).join("");
 
-    card.innerHTML = 
+    card.innerHTML =
       '<div class="conjugation-header">' +
         '<h3>' + verb.infinitive + ' — ' + verb.english + '</h3>' +
         '<div class="conjugation-meta">' +
           '<span class="tense-badge tense-' + tenseKey + '">' + tense.name + '</span>' +
-          '<span class="verb-badge">' + verb.group + '</span>' +
+          '<span class="verb-badge group-' + verb.groupNum + '">' + verb.group + '</span>' +
         '</div>' +
       '</div>' +
-      '<table class="conjugation-table"><tbody>' + tableRows + '</tbody></table>';
+      '<table class="conjugation-table bilingual-table">' +
+        '<thead><tr><th>Pronom</th><th>Français</th><th>English</th></tr></thead>' +
+        '<tbody>' + tableRows + '</tbody>' +
+      '</table>';
 
     return card;
   }

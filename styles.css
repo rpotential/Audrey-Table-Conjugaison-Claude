@@ -818,3 +818,360 @@ button.ghost:hover,
   top: -4px;
   right: 1px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Learn Section - Verb Groups & Tense Guide
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Verb Groups Container */
+.groups-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+
+.group-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--pink-50);
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  background: linear-gradient(135deg, var(--pink-50) 0%, white 100%);
+  border-bottom: 1px solid var(--pink-100);
+}
+
+.group-number {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, var(--pink-400) 0%, var(--pink-500) 100%);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-pink);
+}
+
+.group-1 .group-number { background: linear-gradient(135deg, var(--pink-300) 0%, var(--pink-400) 100%); }
+.group-2 .group-number { background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%); }
+.group-3 .group-number { background: linear-gradient(135deg, #b39ddb 0%, #9575cd 100%); }
+
+.group-title h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--warm-800);
+  margin-bottom: var(--space-xs);
+}
+
+.group-title p {
+  font-size: 0.85rem;
+  color: var(--warm-500);
+}
+
+.group-rule {
+  padding: var(--space-md) var(--space-lg);
+  background: var(--pink-50);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.group-rule .highlight {
+  background: var(--pink-200);
+  padding: 0.1em 0.4em;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  color: var(--warm-700);
+}
+
+.group-pattern {
+  padding: var(--space-sm) var(--space-lg);
+  font-size: 0.85rem;
+  color: var(--warm-600);
+  border-bottom: 1px solid var(--pink-50);
+}
+
+.group-verbs {
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.verb-chip {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-sm) var(--space-md);
+  background: white;
+  border: 1px solid var(--pink-100);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.verb-chip:hover {
+  border-color: var(--pink-300);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.verb-chip .verb-fr {
+  font-weight: 600;
+  color: var(--pink-600);
+  font-size: 0.95rem;
+}
+
+.verb-chip .verb-en {
+  font-size: 0.75rem;
+  color: var(--warm-500);
+}
+
+/* Special Verbs Card (Être & Avoir) */
+.special-verbs-card {
+  margin-bottom: var(--space-2xl);
+}
+
+.special-verbs-card h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--warm-800);
+  margin-bottom: var(--space-sm);
+}
+
+.auxiliaries-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+}
+
+.auxiliary-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--pink-200);
+}
+
+.auxiliary-header {
+  padding: var(--space-lg);
+  background: linear-gradient(135deg, var(--pink-100) 0%, var(--pink-50) 100%);
+  border-bottom: 1px solid var(--pink-200);
+}
+
+.auxiliary-header h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--warm-800);
+  margin-bottom: var(--space-xs);
+}
+
+.auxiliary-header .aux-en {
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--warm-500);
+}
+
+.auxiliary-header .aux-note {
+  font-size: 0.85rem;
+  color: var(--warm-600);
+  margin-top: var(--space-sm);
+}
+
+/* Bilingual Table */
+.bilingual-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bilingual-table thead {
+  background: var(--pink-50);
+}
+
+.bilingual-table th {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--warm-500);
+  border-bottom: 1px solid var(--pink-100);
+}
+
+.bilingual-table td {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--pink-50);
+  font-size: 0.9rem;
+}
+
+.bilingual-table tr:last-child td {
+  border-bottom: none;
+}
+
+.bilingual-table .conj-fr {
+  font-weight: 600;
+  color: var(--pink-600);
+}
+
+.bilingual-table .conj-en {
+  color: var(--warm-500);
+  font-size: 0.85rem;
+}
+
+/* Tense Guide */
+.tense-guide {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--space-lg);
+}
+
+.tense-guide-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--pink-50);
+}
+
+.tense-header {
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--pink-100);
+}
+
+.tense-header h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--warm-800);
+  margin-bottom: var(--space-sm);
+}
+
+.tense-header .tense-en {
+  font-weight: 400;
+  font-size: 0.9rem;
+  color: var(--warm-500);
+}
+
+.tense-header .tense-desc {
+  font-size: 0.9rem;
+  color: var(--warm-700);
+  margin-bottom: var(--space-xs);
+}
+
+.tense-header .tense-desc-en {
+  font-size: 0.85rem;
+  color: var(--warm-500);
+  font-style: italic;
+}
+
+.tense-body {
+  padding: var(--space-lg);
+}
+
+.when-to-use {
+  margin-bottom: var(--space-lg);
+}
+
+.when-to-use h4 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--warm-600);
+  margin-bottom: var(--space-sm);
+}
+
+.when-to-use ul {
+  list-style: none;
+  padding: 0;
+}
+
+.when-to-use li {
+  padding: var(--space-xs) 0;
+  padding-left: var(--space-md);
+  position: relative;
+  font-size: 0.9rem;
+}
+
+.when-to-use li::before {
+  content: "◆";
+  position: absolute;
+  left: 0;
+  color: var(--pink-400);
+  font-size: 0.6rem;
+  top: 0.5em;
+}
+
+.when-to-use .use-fr {
+  color: var(--warm-700);
+}
+
+.when-to-use .use-en {
+  color: var(--warm-500);
+  font-size: 0.85rem;
+}
+
+.examples h4 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--warm-600);
+  margin-bottom: var(--space-sm);
+}
+
+.examples-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.example-pair {
+  background: var(--pink-50);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  border-left: 3px solid var(--pink-300);
+}
+
+.example-pair .example-fr {
+  font-weight: 500;
+  color: var(--warm-800);
+  margin-bottom: var(--space-xs);
+}
+
+.example-pair .example-en {
+  font-size: 0.85rem;
+  color: var(--warm-500);
+  font-style: italic;
+}
+
+/* Group badges in tables */
+.verb-badge.group-1 { background: var(--pink-100); color: var(--pink-600); }
+.verb-badge.group-2 { background: #e1bee7; color: #7b1fa2; }
+.verb-badge.group-3 { background: #d1c4e9; color: #512da8; }
+
+/* Responsive for Learn Section */
+@media (max-width: 768px) {
+  .groups-container {
+    grid-template-columns: 1fr;
+  }
+
+  .tense-guide {
+    grid-template-columns: 1fr;
+  }
+
+  .auxiliaries-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .group-number {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+  }
+}
