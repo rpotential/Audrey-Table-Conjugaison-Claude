@@ -20,6 +20,13 @@
     reviewList: [],
     selectedVerbs: [],
     selectedTenses: [],
+    // Flashcard state
+    flashcardDirection: "fr-to-en",
+    flashcardCurrentVerb: null,
+    flashcardCorrect: 0,
+    flashcardTotal: 0,
+    flashcardStreak: 0,
+    flashcardRevealed: false,
   };
 
   const XP_PER_LEVEL = 100;
@@ -29,32 +36,52 @@
   const elements = {};
 
   function init() {
-    // Cache DOM elements
+    // Cache DOM elements - Quiz
     elements.tablesView = document.getElementById("tables");
     elements.quizView = document.getElementById("quiz");
     elements.tablesGrid = document.getElementById("tables-grid");
     elements.tenseLabel = document.getElementById("tense-label");
     elements.verbLabel = document.getElementById("verb-label");
+    elements.groupLabel = document.getElementById("group-label");
+    elements.verbInfinitive = document.getElementById("verb-infinitive");
     elements.pronounFr = document.getElementById("pronoun-fr");
     elements.pronounEn = document.getElementById("pronoun-en");
     elements.answerInput = document.getElementById("answer-input");
     elements.submitBtn = document.getElementById("submit-answer");
     elements.skipBtn = document.getElementById("skip-question");
+    elements.hintBtn = document.getElementById("hint-btn");
     elements.feedback = document.getElementById("feedback");
     elements.timer = document.getElementById("timer");
+    elements.timerCard = document.getElementById("timer-card");
     elements.levelValue = document.getElementById("level-value");
     elements.xpValue = document.getElementById("xp-value");
     elements.streakValue = document.getElementById("streak-value");
     elements.accuracyValue = document.getElementById("accuracy-value");
     elements.scoreValue = document.getElementById("score-value");
+    elements.streakDisplay = document.getElementById("streak-display");
+    elements.accuracyDisplay = document.getElementById("accuracy-display");
     elements.countValue = document.getElementById("count-value");
     elements.reviewList = document.getElementById("review-list");
+
+    // Cache DOM elements - Flashcards
+    elements.flashcard = document.getElementById("flashcard");
+    elements.flashcardPrompt = document.getElementById("flashcard-prompt");
+    elements.flashcardHint = document.getElementById("flashcard-hint");
+    elements.flashcardInput = document.getElementById("flashcard-input");
+    elements.flashcardCheck = document.getElementById("flashcard-check");
+    elements.flashcardReveal = document.getElementById("flashcard-reveal");
+    elements.flashcardNext = document.getElementById("flashcard-next");
+    elements.flashcardFeedback = document.getElementById("flashcard-feedback");
+    elements.flashcardCorrect = document.getElementById("flashcard-correct");
+    elements.flashcardTotal = document.getElementById("flashcard-total");
+    elements.flashcardStreak = document.getElementById("flashcard-streak");
 
     loadProgress();
     renderLearnSection();
     renderTables();
     setupEventListeners();
     generateNewQuestion();
+    generateFlashcard();
     updateUI();
   }
 
@@ -258,10 +285,16 @@
 
     if (elements.tenseLabel) {
       elements.tenseLabel.textContent = state.currentTense.name;
-      elements.tenseLabel.className = "tense-badge tense-" + state.currentTense.key;
+      elements.tenseLabel.className = "quiz-badge tense-badge tense-" + state.currentTense.key;
     }
     if (elements.verbLabel) {
-      elements.verbLabel.textContent = state.currentVerb.infinitive + " (" + state.currentVerb.english + ")";
+      elements.verbLabel.textContent = state.currentVerb.infinitive;
+    }
+    if (elements.groupLabel) {
+      elements.groupLabel.textContent = state.currentVerb.group;
+    }
+    if (elements.verbInfinitive) {
+      elements.verbInfinitive.textContent = state.currentVerb.infinitive + " — " + state.currentVerb.english;
     }
     if (elements.pronounFr) elements.pronounFr.textContent = displayPronoun;
     if (elements.pronounEn) elements.pronounEn.textContent = "(" + pronoun.en + ")";
@@ -272,7 +305,7 @@
     }
     if (elements.feedback) {
       elements.feedback.textContent = "";
-      elements.feedback.className = "feedback";
+      elements.feedback.className = "quiz-feedback";
     }
   }
 
@@ -322,7 +355,7 @@
 
     var encouragement = ENCOURAGEMENTS.correct[Math.floor(Math.random() * ENCOURAGEMENTS.correct.length)];
     elements.feedback.textContent = encouragement + " +" + xpGained + " XP";
-    elements.feedback.className = "feedback correct";
+    elements.feedback.className = "quiz-feedback correct";
     elements.answerInput.classList.add("pulse");
     setTimeout(function() { elements.answerInput.classList.remove("pulse"); }, 400);
   }
@@ -341,7 +374,7 @@
     if (state.reviewList.length > 20) state.reviewList.pop();
 
     elements.feedback.innerHTML = "La réponse : <strong>" + correctAnswer + "</strong>";
-    elements.feedback.className = "feedback incorrect";
+    elements.feedback.className = "quiz-feedback incorrect";
     elements.answerInput.classList.add("shake");
     setTimeout(function() { elements.answerInput.classList.remove("shake"); }, 300);
 
@@ -351,8 +384,15 @@
   function skipQuestion() {
     var correctAnswer = state.currentVerb.tenses[state.currentTense.key][state.currentPronounIndex];
     elements.feedback.innerHTML = "Réponse : <strong>" + correctAnswer + "</strong>";
-    elements.feedback.className = "feedback incorrect";
+    elements.feedback.className = "quiz-feedback incorrect";
     setTimeout(function() { generateNewQuestion(); }, 1500);
+  }
+
+  function showHint() {
+    var correctAnswer = state.currentVerb.tenses[state.currentTense.key][state.currentPronounIndex];
+    var hint = correctAnswer.substring(0, Math.ceil(correctAnswer.length / 2)) + "...";
+    elements.feedback.innerHTML = "Indice : <strong>" + hint + "</strong>";
+    elements.feedback.className = "quiz-feedback hint";
   }
 
   function checkLevelUp() {
@@ -391,6 +431,15 @@
     if (elements.accuracyValue) elements.accuracyValue.textContent = accuracy + "%";
     if (elements.scoreValue) elements.scoreValue.textContent = state.score;
     if (elements.countValue) elements.countValue.textContent = state.correct + " / " + state.total;
+
+    // Update quiz stats panel
+    if (elements.streakDisplay) elements.streakDisplay.textContent = state.streak;
+    if (elements.accuracyDisplay) elements.accuracyDisplay.textContent = state.total > 0 ? accuracy + "%" : "—";
+
+    // Update flashcard stats
+    if (elements.flashcardCorrect) elements.flashcardCorrect.textContent = state.flashcardCorrect;
+    if (elements.flashcardTotal) elements.flashcardTotal.textContent = state.flashcardTotal;
+    if (elements.flashcardStreak) elements.flashcardStreak.textContent = state.flashcardStreak;
   }
 
   function updateReviewList() {
@@ -407,6 +456,125 @@
     }).join("");
   }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // Flashcard Functions
+  // ─────────────────────────────────────────────────────────────────────────
+
+  function generateFlashcard() {
+    var verbKeys = Object.keys(VERBS);
+    var randomKey = verbKeys[Math.floor(Math.random() * verbKeys.length)];
+    state.flashcardCurrentVerb = VERBS[randomKey];
+    state.flashcardRevealed = false;
+
+    displayFlashcard();
+  }
+
+  function displayFlashcard() {
+    if (!elements.flashcardPrompt) return;
+
+    var verb = state.flashcardCurrentVerb;
+    if (state.flashcardDirection === "fr-to-en") {
+      elements.flashcardPrompt.textContent = verb.infinitive;
+      elements.flashcardHint.textContent = "(French → English)";
+    } else {
+      elements.flashcardPrompt.textContent = verb.english;
+      elements.flashcardHint.textContent = "(English → French)";
+    }
+
+    if (elements.flashcardInput) {
+      elements.flashcardInput.value = "";
+      elements.flashcardInput.placeholder = state.flashcardDirection === "fr-to-en" ? "Type English..." : "Type French...";
+      elements.flashcardInput.focus();
+    }
+
+    if (elements.flashcardFeedback) {
+      elements.flashcardFeedback.innerHTML = "";
+      elements.flashcardFeedback.className = "flashcard-feedback";
+    }
+
+    if (elements.flashcard) {
+      elements.flashcard.classList.remove("revealed");
+    }
+  }
+
+  function checkFlashcardAnswer() {
+    if (!state.flashcardCurrentVerb || state.flashcardRevealed) return;
+
+    var userAnswer = elements.flashcardInput.value.trim().toLowerCase();
+    var verb = state.flashcardCurrentVerb;
+    var correctAnswer;
+
+    if (state.flashcardDirection === "fr-to-en") {
+      correctAnswer = verb.english.toLowerCase();
+    } else {
+      correctAnswer = verb.infinitive.toLowerCase();
+    }
+
+    // Normalize both for comparison
+    var normalizedUser = normalizeAnswer(userAnswer);
+    var normalizedCorrect = normalizeAnswer(correctAnswer);
+
+    // Also accept without "to " prefix for English
+    var correctWithoutTo = correctAnswer.replace(/^to /, "");
+    var normalizedWithoutTo = normalizeAnswer(correctWithoutTo);
+
+    state.flashcardTotal++;
+
+    if (normalizedUser === normalizedCorrect || normalizedUser === normalizedWithoutTo) {
+      // Correct
+      state.flashcardCorrect++;
+      state.flashcardStreak++;
+      state.flashcardRevealed = true;
+
+      elements.flashcardFeedback.innerHTML = '<span class="correct-icon">✓</span> Correct!';
+      elements.flashcardFeedback.className = "flashcard-feedback correct";
+
+      if (elements.flashcard) elements.flashcard.classList.add("correct-answer");
+
+      // Add XP for flashcards too
+      state.xp += 5;
+      checkLevelUp();
+    } else {
+      // Incorrect
+      state.flashcardStreak = 0;
+      state.flashcardRevealed = true;
+
+      var displayCorrect = state.flashcardDirection === "fr-to-en" ? verb.english : verb.infinitive;
+      elements.flashcardFeedback.innerHTML = '<span class="incorrect-icon">✗</span> ' + displayCorrect;
+      elements.flashcardFeedback.className = "flashcard-feedback incorrect";
+
+      if (elements.flashcard) elements.flashcard.classList.add("incorrect-answer");
+    }
+
+    updateUI();
+    saveProgress();
+  }
+
+  function revealFlashcard() {
+    if (state.flashcardRevealed) return;
+
+    state.flashcardRevealed = true;
+    state.flashcardTotal++;
+    state.flashcardStreak = 0;
+
+    var verb = state.flashcardCurrentVerb;
+    var answer = state.flashcardDirection === "fr-to-en" ? verb.english : verb.infinitive;
+
+    elements.flashcardFeedback.innerHTML = '<span class="reveal-icon">→</span> ' + answer;
+    elements.flashcardFeedback.className = "flashcard-feedback revealed";
+
+    if (elements.flashcard) elements.flashcard.classList.add("revealed");
+
+    updateUI();
+  }
+
+  function nextFlashcard() {
+    if (elements.flashcard) {
+      elements.flashcard.classList.remove("revealed", "correct-answer", "incorrect-answer");
+    }
+    generateFlashcard();
+  }
+
   function setupEventListeners() {
     document.querySelectorAll(".tab").forEach(function(tab) {
       tab.addEventListener("click", function() {
@@ -417,6 +585,7 @@
 
     if (elements.submitBtn) elements.submitBtn.addEventListener("click", checkAnswer);
     if (elements.skipBtn) elements.skipBtn.addEventListener("click", skipQuestion);
+    if (elements.hintBtn) elements.hintBtn.addEventListener("click", showHint);
 
     if (elements.answerInput) {
       elements.answerInput.addEventListener("keypress", function(e) {
@@ -424,21 +593,52 @@
       });
     }
 
-    document.querySelectorAll(".mode-btn").forEach(function(btn) {
+    // Quiz mode selector (new UI)
+    document.querySelectorAll(".quiz-mode").forEach(function(btn) {
       btn.addEventListener("click", function() {
-        document.querySelectorAll(".mode-btn").forEach(function(b) { b.classList.remove("active"); });
+        document.querySelectorAll(".quiz-mode").forEach(function(b) { b.classList.remove("active"); });
         btn.classList.add("active");
         state.mode = btn.dataset.mode;
 
         if (state.mode === "timed") {
           resetQuizState();
           startTimer();
+          if (elements.timerCard) elements.timerCard.classList.add("active");
         } else {
           clearInterval(state.timerInterval);
           if (elements.timer) elements.timer.textContent = "Ready";
+          if (elements.timerCard) elements.timerCard.classList.remove("active");
         }
       });
     });
+
+    // Flashcard mode selector
+    document.querySelectorAll(".flashcard-mode").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        document.querySelectorAll(".flashcard-mode").forEach(function(b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        state.flashcardDirection = btn.dataset.direction;
+        generateFlashcard();
+      });
+    });
+
+    // Flashcard buttons
+    if (elements.flashcardCheck) elements.flashcardCheck.addEventListener("click", checkFlashcardAnswer);
+    if (elements.flashcardReveal) elements.flashcardReveal.addEventListener("click", revealFlashcard);
+    if (elements.flashcardNext) elements.flashcardNext.addEventListener("click", nextFlashcard);
+
+    // Flashcard input enter key
+    if (elements.flashcardInput) {
+      elements.flashcardInput.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+          if (state.flashcardRevealed) {
+            nextFlashcard();
+          } else {
+            checkFlashcardAnswer();
+          }
+        }
+      });
+    }
   }
 
   function switchView(viewName) {

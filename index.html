@@ -83,7 +83,8 @@
         <button class="tab" data-view="tables">
           Tables / Tables
         </button>
-        <button class="tab" data-view="quiz">Quiz / Game</button>
+        <button class="tab" data-view="quiz">Quiz</button>
+        <button class="tab" data-view="flashcards">Flashcards</button>
       </nav>
 
       <main>
@@ -181,78 +182,182 @@
           <div id="tables-grid" class="tables-grid"></div>
         </section>
 
+        <!-- Quiz Section - Redesigned -->
         <section id="quiz" class="view">
-          <div class="quiz-layout">
-            <div class="card quiz-card">
-              <div class="quiz-header">
-                <div>
-                  <h2>Quiz doux</h2>
-                  <p>
-                    Answer, earn paw points, and build muscle memory.
-                  </p>
+          <div class="quiz-hero">
+            <div class="quiz-hero-content">
+              <h2>Quiz de Conjugaison</h2>
+              <p>Conjugate the verb correctly. Build your streak!</p>
+            </div>
+            <div class="quiz-mode-selector">
+              <button class="quiz-mode active" data-mode="practice">
+                <span class="mode-icon">♡</span>
+                <span class="mode-label">Practice</span>
+                <span class="mode-desc">No pressure</span>
+              </button>
+              <button class="quiz-mode" data-mode="timed">
+                <span class="mode-icon">⏱</span>
+                <span class="mode-label">Sprint</span>
+                <span class="mode-desc">60 seconds</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="quiz-game-area">
+            <div class="quiz-main-card">
+              <!-- Question badges -->
+              <div class="quiz-badges">
+                <span class="quiz-badge tense-badge" id="tense-label">Présent</span>
+                <span class="quiz-badge verb-badge" id="verb-label">parler</span>
+                <span class="quiz-badge group-badge" id="group-label">1er groupe</span>
+              </div>
+
+              <!-- Main question display -->
+              <div class="quiz-question">
+                <div class="quiz-pronoun">
+                  <span class="pronoun-main" id="pronoun-fr">je</span>
+                  <span class="pronoun-hint" id="pronoun-en">(I)</span>
                 </div>
-                <div class="mode-buttons" role="group">
-                  <button class="mode-btn active" data-mode="practice">
-                    Practice
+                <div class="quiz-verb-infinitive" id="verb-infinitive">parler</div>
+              </div>
+
+              <!-- Answer input -->
+              <div class="quiz-answer-section">
+                <div class="quiz-input-wrapper">
+                  <input
+                    id="answer-input"
+                    type="text"
+                    class="quiz-input"
+                    placeholder="Type conjugation..."
+                    autocomplete="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                  />
+                  <button id="submit-answer" class="quiz-submit-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
                   </button>
-                  <button class="mode-btn" data-mode="timed">
-                    60s Sprint
+                </div>
+                <div class="quiz-actions">
+                  <button id="skip-question" class="quiz-action-btn">
+                    Skip
+                  </button>
+                  <button id="hint-btn" class="quiz-action-btn">
+                    Hint
                   </button>
                 </div>
               </div>
 
-              <div class="question-card">
-                <div class="question-meta">
-                  <span id="tense-label"></span>
-                  <span id="verb-label"></span>
+              <!-- Feedback -->
+              <div id="feedback" class="quiz-feedback"></div>
+            </div>
+
+            <!-- Stats sidebar -->
+            <div class="quiz-stats-panel">
+              <div class="stats-card">
+                <div class="stat-item big">
+                  <span class="stat-number" id="score-value">0</span>
+                  <span class="stat-label">Score</span>
                 </div>
-
-                <div class="question-main">
-                  <div class="pronoun-box">
-                    <span id="pronoun-fr" class="pronoun-fr"></span>
-                    <span id="pronoun-en" class="pronoun-en"></span>
+                <div class="stat-row">
+                  <div class="stat-item">
+                    <span class="stat-number" id="streak-display">0</span>
+                    <span class="stat-label">Streak</span>
                   </div>
-
-                  <div class="answer-area">
-                    <label for="answer-input">Conjuguer / Conjugate</label>
-                    <input
-                      id="answer-input"
-                      type="text"
-                      placeholder="Ex: ai parlé"
-                      autocomplete="off"
-                      spellcheck="false"
-                    />
-                    <div class="answer-actions">
-                      <button id="submit-answer" class="primary">
-                        Check
-                      </button>
-                      <button id="skip-question" class="ghost">
-                        Skip
-                      </button>
-                    </div>
-                    <div id="feedback" class="feedback"></div>
+                  <div class="stat-item">
+                    <span class="stat-number" id="accuracy-display">—</span>
+                    <span class="stat-label">Accuracy</span>
                   </div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item small">
+                  <span class="stat-label">Correct / Total</span>
+                  <span class="stat-value" id="count-value">0 / 0</span>
+                </div>
+              </div>
+
+              <div class="timer-card" id="timer-card">
+                <div class="timer-display" id="timer">Ready</div>
+              </div>
+
+              <div class="review-card">
+                <h4>À revoir</h4>
+                <div id="review-list" class="quiz-review-list">
+                  <p class="empty-review">No mistakes yet!</p>
                 </div>
               </div>
             </div>
+          </div>
+        </section>
 
-            <aside class="card side-card">
-              <h3>Progress</h3>
-              <div class="progress-row">
-                <span>Score</span>
-                <strong id="score-value">0</strong>
+        <!-- Flashcards Section - NEW -->
+        <section id="flashcards" class="view">
+          <div class="flashcard-hero">
+            <h2>Flashcards</h2>
+            <p>Learn verb translations. See French, write English — or the other way around!</p>
+          </div>
+
+          <div class="flashcard-mode-selector">
+            <button class="flashcard-mode active" data-direction="fr-to-en">
+              <span class="flag">🇫🇷</span>
+              <span class="arrow">→</span>
+              <span class="flag">🇬🇧</span>
+              <span class="mode-text">French → English</span>
+            </button>
+            <button class="flashcard-mode" data-direction="en-to-fr">
+              <span class="flag">🇬🇧</span>
+              <span class="arrow">→</span>
+              <span class="flag">🇫🇷</span>
+              <span class="mode-text">English → French</span>
+            </button>
+          </div>
+
+          <div class="flashcard-game-area">
+            <div class="flashcard-container">
+              <div class="flashcard" id="flashcard">
+                <div class="flashcard-front">
+                  <div class="flashcard-content">
+                    <span class="flashcard-word" id="flashcard-prompt">parler</span>
+                    <span class="flashcard-hint" id="flashcard-hint">(verb)</span>
+                  </div>
+                </div>
               </div>
-              <div class="progress-row">
-                <span>Correct / Total</span>
-                <strong id="count-value">0 / 0</strong>
+
+              <div class="flashcard-input-area">
+                <input
+                  type="text"
+                  id="flashcard-input"
+                  class="flashcard-input"
+                  placeholder="Type your answer..."
+                  autocomplete="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                />
+                <div class="flashcard-buttons">
+                  <button id="flashcard-check" class="flashcard-btn primary">Check</button>
+                  <button id="flashcard-reveal" class="flashcard-btn ghost">Reveal</button>
+                  <button id="flashcard-next" class="flashcard-btn ghost">Next</button>
+                </div>
               </div>
-              <div class="timer" id="timer">Ready</div>
-              <div class="review-title">À revoir / Review</div>
-              <div id="review-list" class="review-list"></div>
-              <div class="tip">
-                Tip: short, daily sessions beat cramming.
+
+              <div id="flashcard-feedback" class="flashcard-feedback"></div>
+            </div>
+
+            <div class="flashcard-progress">
+              <div class="flashcard-stat">
+                <span class="flashcard-stat-value" id="flashcard-correct">0</span>
+                <span class="flashcard-stat-label">Correct</span>
               </div>
-            </aside>
+              <div class="flashcard-stat">
+                <span class="flashcard-stat-value" id="flashcard-total">0</span>
+                <span class="flashcard-stat-label">Total</span>
+              </div>
+              <div class="flashcard-stat">
+                <span class="flashcard-stat-value" id="flashcard-streak">0</span>
+                <span class="flashcard-stat-label">Streak</span>
+              </div>
+            </div>
           </div>
         </section>
       </main>
